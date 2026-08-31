@@ -19,6 +19,13 @@ class Database {
     rules: [],
   };
   private storageFile = path.join(process.cwd(), '.workpulse_db.json');
+private save() {
+  try {
+    fs.writeFileSync(this.storageFile, ...);
+  } catch (e) {
+    console.error('Failed to persist database state:', e);
+  }
+}
   private initialized = false;
   public async init() {
     if (this.initialized) return;
