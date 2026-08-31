@@ -1,5 +1,5 @@
 version: '3.8'
-
+ 
 services:
   app:
     build:
@@ -9,12 +9,13 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - JWT_SECRET=workpulse_production_secure_jwt_secret_key_2025
     volumes:
       - app-data:/app/data
-
+ 
 volumes:
   app-data:

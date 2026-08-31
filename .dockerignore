@@ -5,3 +5,6 @@ dist
 npm-debug.log
 Dockerfile
 .dockerignore
+.env
+.env.*
+!.env.example
