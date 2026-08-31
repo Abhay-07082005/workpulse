@@ -11,10 +11,8 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Initialize DB and mock seed data
   await db.init();
 
-  // Basic Middlewares
   app.use(cors({
     origin: true,
     credentials: true,
@@ -23,13 +21,10 @@ async function startServer() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
 
-  // Mount API Routes FIRST
   app.use('/api', apiRoutes);
 
-  // Centralized Error Handler for API
   app.use('/api', errorHandler);
 
-  // Vite middleware for development or static serving for production
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -44,9 +39,9 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 WorkPulse Server running at http://0.0.0.0:${PORT}`);
-  });
+  app.listen(PORT, '127.0.0.1', () => {
+  console.log(`🚀 WorkPulse Server running at http://127.0.0.1:${PORT}`);
+});
 }
 
 startServer().catch((err) => {
