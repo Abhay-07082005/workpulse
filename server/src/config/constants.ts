@@ -1,0 +1,30 @@
+export const CONFIG = {
+  PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+  JWT_SECRET: process.env.JWT_SECRET || 'workpulse_jwt_super_secret_production_key_2026_x89',
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
+  COOKIE_NAME: 'workpulse_token',
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  ATTENDANCE_RULES: {
+    WORK_START_TIME: '09:00',      
+    GRACE_PERIOD_END: '09:30',     
+    LATE_THRESHOLD_END: '10:00',   
+    STANDARD_WORK_HOURS: 8.0,     
+    MIN_HOURS_FOR_FULL_DAY: 7.0,
+    MIN_HOURS_FOR_HALF_DAY: 4.0,
+  },
+  LEAVE_DEFAULTS: {
+    CASUAL: 12,
+    SICK: 10,
+    ANNUAL: 15,
+  },
+  DEPARTMENTS: [
+    'Engineering',
+    'Human Resources',
+    'Product Management',
+    'Design',
+    'Marketing',
+    'Sales',
+    'Finance',
+    'Operations',
+  ],
+};

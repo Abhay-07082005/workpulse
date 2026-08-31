@@ -1,0 +1,139 @@
+// Prisma Schema for WorkPulse - Employee Attendance & Leave Management System
+// Database: PostgreSQL
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  EMPLOYEE
+  HR_ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  ABSENT
+  IN_PROGRESS
+  COMPLETED
+  ON_LEAVE
+  HALF_DAY
+}
+
+enum LeaveType {
+  CASUAL
+  SICK
+  ANNUAL
+  UNPAID
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model User {
+  id              String         @id @default(uuid())
+  name            String
+  email           String         @unique
+  password        String
+  role            Role           @default(EMPLOYEE)
+  department      String         @default("Engineering")
+  designation     String         @default("Software Engineer")
+  avatar          String?
+  employeeCode    String         @unique
+  phone           String?
+  joinDate        DateTime       @default(now())
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  attendances     Attendance[]
+  leaveRequests   Leave[]        @relation("EmployeeLeaves")
+  reviewedLeaves  Leave[]        @relation("HRReviewedLeaves")
+  leaveBalance    LeaveBalance?
+
+  @@index([email])
+  @@index([role])
+  @@index([department])
+}
+
+model Attendance {
+  id           String           @id @default(uuid())
+  employeeId   String
+  date         String           // Format: YYYY-MM-DD for accurate day-level indexing
+  checkIn      DateTime?
+  checkOut     DateTime?
+  workingHours Float            @default(0.0) // In decimal hours, e.g., 8.5
+  overtime     Float            @default(0.0) // Hours worked beyond 8.0
+  status       AttendanceStatus @default(IN_PROGRESS)
+  notes        String?
+  ipAddress    String?
+  location     String?          @default("Office HQ")
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  employee     User             @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, date])
+  @@index([date])
+  @@index([employeeId])
+  @@index([status])
+}
+
+model Leave {
+  id           String      @id @default(uuid())
+  employeeId   String
+  leaveType    LeaveType   @default(CASUAL)
+  startDate    String      // Format: YYYY-MM-DD
+  endDate      String      // Format: YYYY-MM-DD
+  daysCount    Int         @default(1)
+  reason       String
+  status       LeaveStatus @default(PENDING)
+  reviewedBy   String?
+  adminComment String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  employee     User        @relation("EmployeeLeaves", fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewer     User?       @relation("HRReviewedLeaves", fields: [reviewedBy], references: [id])
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+model LeaveBalance {
+  id           String   @id @default(uuid())
+  employeeId   String   @unique
+  casualLeave  Int      @default(12)
+  sickLeave    Int      @default(10)
+  annualLeave  Int      @default(15)
+  usedCasual   Int      @default(0)
+  usedSick     Int      @default(0)
+  usedAnnual   Int      @default(0)
+  year         Int      @default(2026)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  employee     User     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+model AttendanceRule {
+  id                  String   @id @default(uuid())
+  workStartTime       String   @default("09:00") // 9:00 AM
+  gracePeriodEnd      String   @default("09:30") // 9:30 AM (Present)
+  lateThresholdEnd    String   @default("10:00") // 10:00 AM (Late)
+  standardWorkHours   Float    @default(8.0)
+  allowOvertime       Boolean  @default(true)
+  isDefault           Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}

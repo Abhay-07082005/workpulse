@@ -1,0 +1,6 @@
+{
+  "name": "WorkPulse - Employee Attendance & Leave Management System",
+  "description": "Enterprise-grade full-stack employee attendance tracking, working hours calculation, overtime, leave management, and HR analytics dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

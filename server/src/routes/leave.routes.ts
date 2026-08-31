@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { leaveController } from '../controllers/leave.controller';
+import { authenticate } from '../middleware/auth.middleware';
+import { authorizeRoles } from '../middleware/role.middleware';
+import { validateBody } from '../middleware/validate.middleware';
+import { applyLeaveSchema, reviewLeaveSchema } from '../validators/leave.validator';
+const router = Router();
+router.use(authenticate);
+router.post('/', validateBody(applyLeaveSchema), leaveController.applyLeave);
+router.get('/my-leaves', leaveController.getMyLeaves);
+router.get('/', authorizeRoles('HR_ADMIN'), leaveController.getAllLeaves);
+router.patch('/:id/status', authorizeRoles('HR_ADMIN'), validateBody(reviewLeaveSchema), leaveController.reviewLeave);
+export default router;

@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { hrController } from '../controllers/hr.controller';
+import { authenticate } from '../middleware/auth.middleware';
+import { authorizeRoles } from '../middleware/role.middleware';
+import { validateQuery } from '../middleware/validate.middleware';
+import { attendanceFilterSchema } from '../validators/attendance.validator';
+const router = Router();
+router.use(authenticate, authorizeRoles('HR_ADMIN'));
+router.get('/dashboard', hrController.getDashboard);
+router.get('/employees', hrController.getEmployees);
+router.get('/attendance', validateQuery(attendanceFilterSchema), hrController.getAttendance);
+export default router;
