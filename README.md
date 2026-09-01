@@ -263,11 +263,37 @@ model LeaveRequest {
 
 ### Docker Deployment
 
-1. **Build and run with Docker Compose:**
+**Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Abhay-07082005/workpulse.git
+   cd workpulse
+   ```
+
+2. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   Then open `.env` and fill in your own values:
+   - `JWT_SECRET` — any long random string (used to sign auth tokens)
+   - `GEMINI_API_KEY` — your Gemini API key (only required for AI-powered features; the rest of the app works without it)
+   - `DATABASE_URL` is not used at runtime and can stay commented out — this app persists data to a local JSON file, not a live database.
+
+3. **Build and start the container:**
    ```bash
    docker-compose up --build
    ```
-   The application will be accessible at `http://localhost:3000`.
+   The application will be accessible at `http://localhost:3000`. On first run, the database auto-seeds with the demo users and sample attendance/leave data listed below.
+
+4. **Log in** with any of the [seed demo credentials](#-seed-demo-credentials) below.
+
+5. **Verify data persists across restarts** (optional): stop the container with `Ctrl+C`, then run `docker-compose up` again (no `--build` needed) — your check-ins and leave requests from step 4 should still be there.
+
+6. **Stop the app:**
+   ```bash
+   docker-compose down
+   ```
 
 ---
 
